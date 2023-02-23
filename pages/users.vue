@@ -157,7 +157,9 @@
 
               <div class="form-group" v-html="editUserError"></div>
               <div class="form-group">
-                <button class="btn bg-sky-500" type="submit">Add User</button>
+                <button class="btn bg-sky-500" type="submit">
+                  Update User
+                </button>
               </div>
             </form>
           </div>
