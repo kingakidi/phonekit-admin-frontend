@@ -90,6 +90,83 @@
           <!-- End of content -->
         </div>
       </div>
+
+      <!-- Edit user modal  -->
+
+      <div
+        class="h-full w-full flex justify-center items-center z-50 bg-transparent absolute top-0 left-0"
+        v-if="isEditUserModal"
+      >
+        <div
+          class="lg:w-2/5 shadow-md border-r-2 p-5 bg-slate-50 sm:w-3/4 border-sky-500"
+        >
+          <div class="flex justify-end items-end mb-4">
+            <button
+              class="px-4 py-2 rounded border-gray-100 bg-sky-500 text-white self-end"
+              @click="showEditModal"
+            >
+              Close
+            </button>
+          </div>
+
+          <!-- Content -->
+          <div class="modal-content">
+            <form id="addUser" @submit.prevent="submitEditUser">
+              <div class="form-group">
+                <label for="name" class="form-label">Name</label>
+                <input
+                  type="text"
+                  class="form-input"
+                  placeholder="Enter your name"
+                  v-model="currentUserData.name"
+                />
+              </div>
+              <div class="form-group">
+                <label for="email" class="form-label"> Email address</label>
+                <input
+                  type="email"
+                  class="form-input"
+                  placeholder="Enter your email"
+                  v-model="currentUserData.email"
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="phone" class="form-label">Phone number</label>
+                <input
+                  type="number"
+                  name="phone"
+                  id="phone"
+                  class="form-input"
+                  placeholder="Enter phone number"
+                  v-model="currentUserData.phone"
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="password" class="input-label"> Password </label>
+                <input
+                  type="password"
+                  name="password"
+                  id="password"
+                  placeholder="Enter Password"
+                  class="form-input"
+                  v-model="currentUserData.password"
+                />
+              </div>
+
+              <div class="form-group" v-html="editUserError"></div>
+              <div class="form-group">
+                <button class="btn bg-sky-500" type="submit">Add User</button>
+              </div>
+            </form>
+          </div>
+
+          <!-- End of content -->
+        </div>
+      </div>
+
+      <!-- End of edit user modal -->
     </div>
 
     <!-- End of Create users modal  -->
@@ -128,18 +205,21 @@
 import axios from "axios";
 const { apiBaseUrl } = useAppConfig();
 
-const isVisibleModal = ref(false);
+let isVisibleModal = ref(false);
+let isEditUserModal = ref(false);
 
-const users = ref([]);
-const newUsersData = ref({
+let users = ref([]);
+let newUsersData = ref({
   name: "",
   email: "",
   phone: "",
   location: "",
   password: "",
 });
-const addUserError = ref("");
-const userColumns = [
+let addUserError = ref("");
+let editUserError = ref("");
+
+let userColumns = [
   { title: "Name", dataIndex: "name" },
   { title: "Email", dataIndex: "email" },
   { title: "Phone", dataIndex: "phone" },
@@ -147,6 +227,13 @@ const userColumns = [
   { title: "Action", key: "action" },
 ];
 
+let currentUserData = ref({
+  name: "",
+  email: "",
+  password: "",
+  phone: "",
+  location: "",
+});
 await axios
   .get(`${apiBaseUrl}/users`)
   .then((res) => {
@@ -158,6 +245,10 @@ await axios
 
 const showModal = () => {
   isVisibleModal.value = !isVisibleModal.value;
+};
+
+const showEditModal = () => {
+  isEditUserModal.value = !isEditUserModal.value;
 };
 
 const addNewUser = async () => {
@@ -190,11 +281,11 @@ const addNewUser = async () => {
       .then((res) => {
         // check status of the response
         if (res.status === 201) {
-          addUserError.value = `<span class="text-red-500">${res.data.message}</span>`;
+          addUserError.value = success(res.data.message);
         }
       })
       .catch((err) => {
-        addUserError.value = `<span class="text-red-500">${err.response.data.message}</span>`;
+        addUserError.value = error(err.response.data.message);
         console.log(err.response);
       });
   }
@@ -203,7 +294,59 @@ const addNewUser = async () => {
 };
 
 // update user
-const updateUser = (id) => {
-  console.log(id);
+const updateUser = async (id) => {
+  // Get the user details
+  isEditUserModal.value = true;
+  currentUserData.value["id"] = id;
+  await axios
+    .get(`${apiBaseUrl}/users/${id}`)
+    .then((res) => {
+      if (res.data && res.data.length > 0) {
+        delete res.data.password;
+        let data = res.data[0];
+        currentUserData.value.name = data.name;
+        currentUserData.value.email = data.email;
+        currentUserData.value.location = data.location;
+        currentUserData.value.phone = data.phone;
+      }
+      // Assign the user details to a variable
+    })
+    .catch((err) => {
+      console.log(err.message);
+      editUserError.value = error(err.response.data.message);
+    });
 };
+
+// submit edited user
+const submitEditUser = async () => {
+  // check for name and email values
+  if (currentUserData.value.name !== "" || currentUserData.value.email !== "") {
+    // send update request
+
+    await axios
+      .put(`${apiBaseUrl}/users/${currentUserData.value.id}`, {
+        name: currentUserData.value.name,
+        email: currentUserData.value.email,
+        phone: currentUserData.value.phone,
+      })
+      .then((res) => {
+        console.log(res);
+        editUserError.value = success(res.data.message);
+      })
+      .catch((err) => {
+        console.log(err);
+        editUserError.value = error(err.response.data.message);
+      });
+  } else {
+    editUserError.value = error("Name and email is required");
+  }
+};
+
+function error(x) {
+  return `<span class="text-red-500"> ${x} </span>`;
+}
+
+function success(x) {
+  return `<span class="text-green-500"> ${x} </span>`;
+}
 </script>
