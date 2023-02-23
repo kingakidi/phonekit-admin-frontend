@@ -22,11 +22,6 @@
 </template>
 
 <script setup>
-props: {
-  show: showModal;
-}
-
-console.log(props.show);
 const isVisibleModal = ref(false);
 
 const showModal = () => {

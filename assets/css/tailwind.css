@@ -9,6 +9,10 @@ body,
 }
 
 @layer components {
+  .form-group {
+    @apply m-3;
+  }
+
   .form-input {
     @apply block
         w-full
@@ -48,5 +52,9 @@ body,
 
   .sidebar-link {
     @apply hover:bg-white hover:text-sky-500 text-white py-2 px-4 rounded flex items-center;
+  }
+
+  .form-label {
+    @apply inline-block mb-2 text-gray-700;
   }
 }
