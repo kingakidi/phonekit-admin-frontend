@@ -10,10 +10,15 @@
       </button>
     </div>
     <a-table :columns="domainsColumns" :dataSource="domains">
-      <template #bodyCell="{ column }">
+      <template #bodyCell="{ column, record }">
         <template v-if="column.dataIndex === 'action'">
           <div class="form-group flex">
-            <button class="btn bg-green-500 m-2 w-20">Edit</button>
+            <button
+              class="btn bg-green-500 m-2 w-20"
+              @click="showEditModal(record.id)"
+            >
+              Edit
+            </button>
             <button class="btn bg-blue-500 m-2 w-32">Generate SSL</button>
             <button class="btn bg-red-500 m-2 w-20">Delete</button>
           </div>
@@ -71,6 +76,56 @@
       <!-- End of content -->
     </div>
   </div>
+
+  <!-- Edit modal  -->
+  <div
+    class="h-screen w-full flex justify-center items-center z-50 bg-transparent absolute top-0 left-0"
+    v-if="editDomainVisibility"
+  >
+    <div
+      class="lg:w-2/5 shadow-md border-r-2 p-5 bg-slate-50 sm:w-3/4 border-sky-500"
+    >
+      <div class="flex justify-end items-end mb-4">
+        <button
+          class="px-4 py-2 rounded border-gray-100 bg-sky-500 text-white self-end"
+          @click="toggleEditModal"
+        >
+          Close
+        </button>
+      </div>
+
+      <!-- Content -->
+      <div class="modal-content">
+        <form @submit.prevent="updateDomain">
+          <div class="form-group">
+            <label for="">Email Address</label>
+            <input
+              type="email"
+              class="form-input"
+              placeholder="Enter user email address"
+              v-model="currentDomain.email"
+            />
+          </div>
+          <div class="form-group">
+            <label for="">Domain name</label>
+            <input
+              type="url"
+              class="form-input"
+              placeholder="Domain name"
+              v-model="currentDomain.domain"
+            />
+          </div>
+
+          <div class="form-group" v-html="domainError"></div>
+          <div class="form-group">
+            <button class="btn">Update Domain</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- End of content -->
+    </div>
+  </div>
 </template>
 
 <script setup>
@@ -80,7 +135,7 @@ const { apiBaseUrl } = useAppConfig();
 const domains = ref([]);
 const domainsColumns = [
   { title: "Domain", dataIndex: "domain" },
-  { title: "Email", dataIndex: "id" },
+  { title: "Email", dataIndex: "email" },
   { title: "Action", dataIndex: "action" },
 ];
 
@@ -98,6 +153,11 @@ const domainError = ref("");
 const addDomainVisibility = ref(false);
 const toggleModal = () => {
   addDomainVisibility.value = !addDomainVisibility.value;
+};
+const editDomainVisibility = ref(false);
+
+const toggleEditModal = () => {
+  editDomainVisibility.value = !editDomainVisibility.value;
 };
 
 // add domain methods
@@ -145,6 +205,63 @@ function error(x) {
 function success(x) {
   return `<span class="text-green-500"> ${x} </span>`;
 }
+
+// Show edit modal
+const currentDomain = reactive({
+  domain: "",
+  id: undefined,
+  user_id: undefined,
+  email: "",
+});
+const showEditModal = async (id) => {
+  // show edit modal
+  toggleEditModal();
+  await axios
+    .get(`${apiBaseUrl}/domains/${id}`)
+    .then((res) => {
+      const data = res.data.data[0];
+      currentDomain.domain = data.domain;
+      currentDomain.id = data.id;
+      currentDomain.user_id = data.user_id;
+      currentDomain.email = data.email;
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+};
+
+const updateDomain = () => {
+  if (
+    currentDomain.email.trim().length > 0 &&
+    currentDomain.domain.trim().length > 0
+  ) {
+    // Send add request
+    domainError.value = "";
+    axios
+      .put(`${apiBaseUrl}/domains/${currentDomain.id}`, {
+        domain: currentDomain.domain,
+        user_id: currentDomain.user_id,
+      })
+      .then((res) => {
+        domainError.value = success(res.data.message);
+      })
+      .catch((err) => {
+        console.log(err);
+        if (err.response && err.response.data && err.response.data.error) {
+          let errors = err.response.data.error;
+
+          errors.forEach((er) => {
+            domainError.value += error(er.message);
+          });
+        } else {
+          domainError.value = "";
+          domainError.value = error(err.response.data.message);
+        }
+      });
+  } else {
+    domainError.value = error("All fields required");
+  }
+};
 </script>
 
 <style></style>
