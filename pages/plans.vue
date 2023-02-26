@@ -170,9 +170,24 @@
     <h1 class="text-left self-start text-xl mt-5">Plan Management</h1>
     <div class="p-5 flex justify-end w-full">
       <button
-        class="outline px-4 py-2 rounded bg-sky-500 text-white"
+        class="outline px-4 py-2 rounded bg-sky-500 text-white flex"
         @click="toggleModal"
       >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="1.5"
+          stroke="currentColor"
+          class="w-6 h-6 mr-1"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"
+          />
+        </svg>
+
         Add Plan
       </button>
     </div>
@@ -200,6 +215,8 @@
 
 <script setup>
 import axios from "axios";
+import { print_error, print_success } from "../composables/print";
+
 const { apiBaseUrl } = useAppConfig();
 
 const plans = ref([]);
@@ -255,24 +272,17 @@ const addNewPlan = () => {
         price,
       })
       .then((res) => {
-        planError.value = success(res.data.message);
+        planError.value = print_success(res.data.message);
       })
       .catch((err) => {
-        planError.value = error(err.response.data.message);
+        planError.value = print_error(err.response.data.message);
         console.log(err);
       });
   } else {
-    planError.value = error("All fields is required");
+    planError.value = print_error("All fields is required");
   }
 };
 
-function error(x) {
-  return `<span class="text-red-500"> ${x} </span>`;
-}
-
-function success(x) {
-  return `<span class="text-green-500"> ${x} </span>`;
-}
 // toggle modal
 let modalVisibility = ref(false);
 function toggleModal() {
@@ -332,13 +342,13 @@ const updatePlan = async () => {
         price: currentPlanDetail.price,
       })
       .then((res) => {
-        planError.value = success(res.data.message);
+        planError.value = print_success(res.data.message);
       })
       .catch((err) => {
-        planError.value = error(err.response.data.message);
+        planError.value = print_error(err.response.data.message);
       });
   } else {
-    planError.value = error("All fields is required");
+    planError.value = print_error("All fields is required");
   }
 };
 </script>

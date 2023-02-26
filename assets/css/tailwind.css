@@ -5,7 +5,7 @@
 html,
 body,
 #__nuxt {
-  @apply h-full;
+  @apply min-h-full;
 }
 
 @layer components {
@@ -32,15 +32,11 @@ body,
 
   .btn {
     @apply w-full
-    px-4 py-2 rounded border-gray-100 bg-sky-500 text-white self-end
-
- 
-
+    px-4 py-2 rounded border-gray-100 bg-sky-500 text-white self-end flex justify-center items-center
     leading-tight
     uppercase
     rounded
     shadow-md
-   
     transition
     duration-150
     ease-in-out;

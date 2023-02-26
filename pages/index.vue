@@ -2,4 +2,8 @@
   <div>This is index</div>
 </template>
 
-<script setup></script>
+<script setup>
+onMounted(() => {
+  redirectTo;
+});
+</script>

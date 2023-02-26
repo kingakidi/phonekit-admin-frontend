@@ -46,10 +46,14 @@
 
 <script setup>
 import axios from "axios";
+const { signIn, status } = useSession();
+
+definePageMeta({ auth: false });
 const { apiBaseUrl } = useAppConfig();
 
 definePageMeta({
   layout: "custom",
+  auth: false,
 });
 const email = ref("");
 const password = ref("");
@@ -70,19 +74,23 @@ const login = async (e) => {
         email: email.value,
         password: password.value,
       })
-      .then((res) => {
+      .then(async (res) => {
         // Set the localStorage
 
         const response = res.data.data;
         const token = response.token;
-
-        localStorage.setItem("phonekit_admin_token", token);
+        const email = response.user.email;
+        const user_id = response.user.id;
+        await signIn("credentials", { token, email, user_id, redirect: false });
         navigateTo("/users");
       })
       .catch((err) => {
         // Show error message
+        console.log(err);
+
         error.value = true;
-        errorMessage.value = err.response.data.message;
+        if (err.response && err.response.data.message)
+          errorMessage.value = err.response.data.message;
       });
   } else {
     errorMessage.value = "All fields required";

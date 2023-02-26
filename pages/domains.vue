@@ -17,6 +17,20 @@
               class="btn bg-green-500 m-2 w-20"
               @click="showEditModal(record.id)"
             >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
+                class="w-6 h-6"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"
+                />
+              </svg>
               Edit
             </button>
             <button class="btn bg-blue-500 m-2 w-32">Generate SSL</button>
@@ -130,6 +144,8 @@
 
 <script setup>
 import axios from "axios";
+import { print_error, print_success } from "../composables/print";
+
 const { apiBaseUrl } = useAppConfig();
 
 const domains = ref([]);
@@ -179,32 +195,24 @@ const addDomain = () => {
         domain: domainObject.domain,
       })
       .then((res) => {
-        domainError.value = success(res.data.message);
+        domainError.value = print_success(res.data.message);
       })
       .catch((err) => {
         if (err.response && err.response.data && err.response.data.error) {
           let errors = err.response.data.error;
 
           errors.forEach((er) => {
-            domainError.value += error(er.message);
+            domainError.value += print_error(er.message);
           });
         } else {
           domainError.value = "";
-          domainError.value = error(err.response.data.message);
+          domainError.value = print_error(err.response.data.message);
         }
       });
   } else {
-    domainError.value = error("All fields required");
+    domainError.value = print_error("All fields required");
   }
 };
-
-function error(x) {
-  return `<span class="text-red-500"> ${x} </span>`;
-}
-
-function success(x) {
-  return `<span class="text-green-500"> ${x} </span>`;
-}
 
 // Show edit modal
 const currentDomain = reactive({
@@ -243,7 +251,7 @@ const updateDomain = () => {
         user_id: currentDomain.user_id,
       })
       .then((res) => {
-        domainError.value = success(res.data.message);
+        domainError.value = print_success(res.data.message);
       })
       .catch((err) => {
         console.log(err);
@@ -251,15 +259,15 @@ const updateDomain = () => {
           let errors = err.response.data.error;
 
           errors.forEach((er) => {
-            domainError.value += error(er.message);
+            domainError.value += print_error(er.message);
           });
         } else {
           domainError.value = "";
-          domainError.value = error(err.response.data.message);
+          domainError.value = print_error(err.response.data.message);
         }
       });
   } else {
-    domainError.value = error("All fields required");
+    domainError.value = print_error("All fields required");
   }
 };
 </script>

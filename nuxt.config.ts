@@ -1,8 +1,7 @@
-// https://nuxt.com/docs/api/configuration/nuxt-config
+// https://nuxt.com/docs/api/configuration/nuxt-config\
 export default defineNuxtConfig({
-  modules: ["@nuxtjs/tailwindcss"],
+  modules: ["@nuxtjs/tailwindcss", "@pinia/nuxt", "@sidebase/nuxt-auth"],
   tailwindcss: {
-    // Options
     configPath: "tailwind.config",
   },
 
@@ -24,5 +23,17 @@ export default defineNuxtConfig({
         usePolling: true,
       },
     },
+  },
+  pinia: {
+    autoImports: [
+      // automatically imports `defineStore`
+      "defineStore", // import { defineStore } from 'pinia'
+      ["defineStore", "definePiniaStore"], // import { defineStore as definePiniaStore } from 'pinia'
+    ],
+  },
+
+  // Bringing authentication configuration
+  auth: {
+    enableGlobalAppMiddleware: true,
   },
 });
