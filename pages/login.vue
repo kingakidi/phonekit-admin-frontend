@@ -1,7 +1,7 @@
 <template>
   <div class="w-full p-5 h-full flex items-center justify-center">
     <div
-      class="block p-6 rounded-lg shadow-lg bg-white max-w-sm md:w-1/3 w-1/2 sm:w-full"
+      class="block p-6 rounded-lg shadow-lg bg-white max-w-sm sm:w-full md:w-1/2"
     >
       <form @submit.prevent="login">
         <h1 class="text-center text-lg font-bold uppercase">Login</h1>

@@ -6,6 +6,8 @@ html,
 body,
 #__nuxt {
   @apply min-h-full;
+  display: flex;
+  flex-direction: column;
 }
 
 @layer components {

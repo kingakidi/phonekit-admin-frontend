@@ -35,5 +35,6 @@ export default defineNuxtConfig({
   // Bringing authentication configuration
   auth: {
     enableGlobalAppMiddleware: true,
+    origin: "http://localhost:3000",
   },
 });
