@@ -13,6 +13,13 @@ export default defineNuxtConfig({
           href: "https://cdn.lineicons.com/4.0/lineicons.css",
         },
       ],
+      charset: "utf-16",
+      viewport: "width=500, initial-scale=1",
+      title: "Phonekit - Admin Dashboard",
+      meta: [
+        // <meta name="description" content="My amazing site">
+        { name: "description", content: "PhoneKit Admin Dashboard" },
+      ],
     },
   },
 
@@ -35,6 +42,8 @@ export default defineNuxtConfig({
   // Bringing authentication configuration
   auth: {
     enableGlobalAppMiddleware: true,
-    origin: "http://localhost:3000",
+    origin: "https://admin.phonekit.io",
   },
+
+  buildDir: "../phonekitAdmin",
 });
