@@ -68,7 +68,7 @@ const login = async (e) => {
     error.value = false;
     isFormSubmitLoading.value = true;
     // show loaders, disabled the button, and send request
-    await this$.api
+    await axios
       .post(`${apiBaseUrl}/auth/login`, {
         email: email.value,
         password: password.value,
