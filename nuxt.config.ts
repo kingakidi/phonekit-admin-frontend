@@ -44,6 +44,4 @@ export default defineNuxtConfig({
     enableGlobalAppMiddleware: true,
     origin: "https://admin.phonekit.io",
   },
-
-  buildDir: "../phonekitAdmin",
 });
