@@ -81,7 +81,7 @@ const login = async (e) => {
         const email = response.user.email;
         const user_id = response.user.id;
         await signIn("credentials", { token, email, user_id, redirect: false });
-        navigateTo("/users");
+        navigateTo("/");
       })
       .catch((err) => {
         // Show error message
